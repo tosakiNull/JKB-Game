@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { dataBase } from './plugins/firebase';
-import { ref, onValue, set } from 'firebase/database'; // TODO: 這裡要包起來
+import { ref, onValue, set, push, child } from 'firebase/database'; // TODO: 這裡要包起來
 import { v4 as uuidv4 } from 'uuid'; // TODO: 同樣包起來
 import Login from './pages/Login';
 // import GameHall from './pages/GameHall';
@@ -20,38 +20,59 @@ function App() {
   const [rivalInfo, setRivalInfo] = useState({});
   const [playerInfo, setPlayerInfo] = useState({});
 
-  function writeUserData(userId, name, email) {
-    // 這裡如果要新增,到時要用push
-    // 不然會一直寫同一個欄位
-    // const newPostKey = push().key;
-    const data = {
-      userName: name,
-      email: email,
-    }
-
-    set(ref(dataBase, `test/Room-1/Game_${config.gameID}/userList/` + name), data);
-
-    setPlayerInfo(data);
-    // setConfig({ ...config, userID: newPostKey });
-
-    // set(ref(dataBase, 'test/Room-1/userList'), []);
-
-    // TODO: 要再多推一個目前場內玩家['user1_name', 'user2_name']
-  }
-
   function enterGame(name) {
+    const gameID = getGameID();
+    console.log('enter gameID', gameID);
+
+    // 玩家
+    const data = { userName: name };
+
+    set(ref(dataBase, `test/Room-1/${gameID}/userList/${name}/`), data);
+    setPlayerInfo(data);
+
     setConfig({
       ...config,
-      userName: name
-    })
-    // TODO: 這裡建userID
-    // TODO: 如果userList已經有兩筆,RoomID要換新的
+      userName: name,
+      gameID: gameID
+    });
+  }
 
-    writeUserData(1, name, 'test@mail.com');
+  function getGameID() {
+
+    const roomInfo = tableInfo[config.roomID] || {};
+    // let gameID = config.gameID;
+
+    // TODO: 沒有gameID
+    console.log('roomID', tableInfo[config.roomID]);
+
+    const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
+
+    // let gameID = `Game_${uuidv4()}`; // 建局
+    let gameID = newPostKey; // 建局
+    console.log('初始 new gameID: ', gameID);
+
+    // 當前RoomID的場次內不滿2人
+    if (roomInfo) {
+      const gameList = Object.keys(roomInfo);
+      const lastGame = roomInfo[gameList[gameList.length - 1]];
+
+      // TODO: 要取場次不滿2人的
+      const canAddGame = gameList.find((item) => roomInfo[gameList[item]].userList < 2);
+
+      console.log('lastGame: ', canAddGame)
+
+      if (Object.keys(lastGame.userList).length < 2) {
+        gameID = gameList[gameList.length - 1];
+
+        console.log('old gameID', gameID)
+      }
+    }
+
+    return gameID;
   }
 
   function handlePunch(value) {
-    set(ref(dataBase, `test/Room-1/Game_${config.gameID}/userList/` + config.userName + '/type'), value);
+    set(ref(dataBase, `test/Room-1/${config.gameID}/userList/` + config.userName + '/type'), value);
     setPlayerInfo({
       ...playerInfo,
       type: value
@@ -67,7 +88,7 @@ function App() {
     // TODO: 用firebase生新key
     console.log('new_gameID');
     const newKey = uuidv4();
-    set(ref(dataBase, `test/Room-1/Game_${newKey}/userList/`), {});
+    set(ref(dataBase, `test/Room-1/${newKey}/userList/`), {});
 
     setConfig({ ...config, gameID: newKey });
 
@@ -93,14 +114,14 @@ function App() {
 
   useEffect(() => {
     console.log('mounted')
-    
+
     return onValue(msgDB, (snapshot) => {
       if (snapshot.exists()) {
         setTableInfo(snapshot.val())
         console.log('snapshot', snapshot.val())
       }
     });
-    
+
     // getAllRoomData();
 
     // handleNewGame();
@@ -114,38 +135,6 @@ function App() {
     const roomInfo = tableInfo[config.roomID];
     let gameID = config.gameID;
 
-    // TODO: 沒有gameID
-    console.log('roomID', tableInfo[config.roomID]);
-    // 初始第一場
-    if (!roomInfo) {
-      gameID = handleNewGame(); // 建局
-      // 進入該遊戲局
-    }
-
-    // 新開頁面要直接加入有房間的
-    if (!config.gameID && roomInfo) {
-      // TODO: 這裡要重寫, 會加到舊房間
-
-      console.log('roomID', tableInfo[config.roomID]);
-      const gameList = Object.keys(tableInfo[config.roomID]);
-      const lastGame = tableInfo[config.roomID][gameList[gameList.length - 1]];
-      console.log('lastGame', lastGame, gameList[gameList.length - 1]);
-
-      console.log('lastGame userList:', lastGame.userList)
-      // TODO: 如果最後一局不滿2人加入,否則開新房
-      if (lastGame.userList && Object.keys(lastGame.userList).length < 2) {
-        gameID = gameList[gameList.length - 1];
-        console.log('old_gameID')
-      } else {
-        gameID = `Game_${uuidv4()}`;
-        set(ref(dataBase, `test/Room-1/${gameID}/userList/`), {});
-        console.log('new_gameID');
-      }
-
-      setConfig({ ...config, gameID });
-    }
-
-    
     // const getNowGame = [`Game_${config.gameID}`]
     console.log('gameID: ', gameID)
     if (roomInfo && roomInfo[gameID]) {
@@ -156,9 +145,9 @@ function App() {
         const userList = getNowGame.userList;
         const userKeyList = Object.keys(userList);
         const nowRivalInfo = userKeyList.find((infoItem) => userList[infoItem].userName !== config.userName);
-  
+
         console.log('useEffect', userList[nowRivalInfo], nowRivalInfo)
-  
+
         setRivalInfo(userList[nowRivalInfo]);
       }
     }
@@ -168,9 +157,9 @@ function App() {
   return (
     <div className="App">
       {config.userName ?
-        <GameTable 
-          tableInfo={tableInfo} 
-          config={config} 
+        <GameTable
+          tableInfo={tableInfo}
+          config={config}
           rivalInfo={rivalInfo}
           playerInfo={playerInfo}
           onPunch={handlePunch}
