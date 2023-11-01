@@ -1,14 +1,15 @@
 // TODO: 遊戲主體
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Segment, Loader, Dimmer } from 'semantic-ui-react';
+import { Icon, Container } from 'semantic-ui-react';
+import Loading from '../components/Loading';
 
 function GameTable(props) {
   const { onPunch, rivalInfo, playerInfo, onNewGame } = props;
   const [isWaitRival, setIsWaitRival] = useState(true);
+  const [loadingConfig, setLoadingConfig] = useState({ show: false, msg: '' })
 
   console.log(playerInfo)
-
 
   function handlePunch(value) {
     onPunch(value);
@@ -91,11 +92,14 @@ function GameTable(props) {
       return;
     }
 
+    // 是否等待對手出拳
     if (!rivalInfo.type) {
       setIsWaitRival(true);
     } else {
       setIsWaitRival(false);
+      setLoadingConfig({ show: true, msg: '等待對方出拳中' })
     }
+
   }, [rivalInfo]);
 
   // TODO: 如果兩方任一方未出拳 不能顯示畫面的出拳
@@ -106,41 +110,39 @@ function GameTable(props) {
   // TODO: 需要一個reset game button
 
   return (
-    <div className="gameTable">
-      {(!isWaitRival && playerInfo.type) && (
-        <>
-          <div>
-            我的拳:  <Icon name={getPunchTypeEmoji(playerInfo.type)} />
-            對方的拳: <Icon name={getPunchTypeEmoji(rivalInfo.type)} />
-          </div>
-          <div>
-            本局 {showWinText()}
-          </div>
-        </>
-      )}
-      {!rivalInfo && <div>等待對方入場中...</div>}
-      {(isWaitRival && playerInfo.type) && <div>等待對方出拳中...</div>}
-      {!playerInfo.type && (
-        <>
-          <button onClick={() => { handlePunch('2') }}>
-            <Icon name={getPunchTypeEmoji('2')} />
-          </button>
-          <button onClick={() => { handlePunch('0') }}>
-            <Icon name={getPunchTypeEmoji('0')} />
-          </button>
-          <button onClick={() => { handlePunch('5') }}>
-            <Icon name={getPunchTypeEmoji('5')} />
-          </button>
-        </>
-      )}
+    <Container className="h-100">
+      <div className="gameTable">
+        {(!isWaitRival && playerInfo.type) && (
+          <>
+            <div>
+              我的拳:  <Icon name={getPunchTypeEmoji(playerInfo.type)} />
+              對方的拳: <Icon name={getPunchTypeEmoji(rivalInfo.type)} />
+            </div>
+            <div>
+              本局 {showWinText()}
+            </div>
+          </>
+        )}
+        {!rivalInfo && <div>等待對方入場中...</div>}
+        {(isWaitRival && playerInfo.type) && <div>等待對方出拳中...</div>}
+        {!playerInfo.type && (
+          <>
+            <button onClick={() => { handlePunch('2') }}>
+              <Icon name={getPunchTypeEmoji('2')} />
+            </button>
+            <button onClick={() => { handlePunch('0') }}>
+              <Icon name={getPunchTypeEmoji('0')} />
+            </button>
+            <button onClick={() => { handlePunch('5') }}>
+              <Icon name={getPunchTypeEmoji('5')} />
+            </button>
+          </>
+        )}
 
-      <button onClick={handleNewGame}>再來一次</button>
-      <Segment>
-        <Dimmer active inverted>
-          <Loader inverted>Loading</Loader>
-        </Dimmer>
-    </Segment>
-    </div>
+        <button onClick={handleNewGame}>再來一次</button>
+        <Loading {...loadingConfig} />
+      </div>
+    </Container>
   );
 }
 
