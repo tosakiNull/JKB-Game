@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Icon } from 'semantic-ui-react';
 
 function GameTable(props) {
-  const { onPunch, rivalInfo, playerInfo } = props;
+  const { onPunch, rivalInfo, playerInfo, onNewGame } = props;
   const [isWaitRival, setIsWaitRival] = useState(true);
 
   console.log(playerInfo)
@@ -82,7 +82,8 @@ function GameTable(props) {
   // TODO: 同房間,新開一局
   function handleNewGame() {
     // TODO: 這裡要去firebase開新局號,在新局號下計type
-    // TODO: 簡易版就是刷新type,多一個欄位isPrepare,確認雙方都按下則新開一局
+    // TODO: 簡易版就是刷新type,多一個欄位isPrepare,確認雙方都按下則新開一局 => 不用, 用局號認裡面是否有兩人
+    onNewGame();
   }
 
   useEffect(() => {
@@ -144,7 +145,8 @@ GameTable.propTypes = {
   config: PropTypes.object,
   onPunch: PropTypes.func,
   rivalInfo: PropTypes.object,
-  playerInfo: PropTypes.object
+  playerInfo: PropTypes.object,
+  onNewGame: PropTypes.func,
 };
 
 export default GameTable;
