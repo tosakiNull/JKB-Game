@@ -57,6 +57,10 @@ function App() {
     })
   }
 
+  function handleClear() {
+    set(ref(dataBase, 'test/Room-1/userList/'), {});
+  }
+
   useEffect(() => {
     onValue(msgDB, (snapshot) => {
       setTableInfo(snapshot.val())
@@ -68,7 +72,9 @@ function App() {
       // 有同桌玩家(假設這裡只進兩人)
       const userList = tableInfo[config.roomID].userList;
       const userKeyList = Object.keys(userList);
-      const nowRivalInfo = userKeyList.find((infoItem) => infoItem !== config.userName);
+      const nowRivalInfo = userKeyList.find((infoItem) => userList[infoItem].userName !== config.userName);
+
+      console.log('useEffect', userList[nowRivalInfo], nowRivalInfo)
 
       setRivalInfo(userList[nowRivalInfo]);
     }
@@ -86,7 +92,7 @@ function App() {
         />
        : <Login createUser={createUser} />
       }
-
+      <button onClick={handleClear}>clear</button>
     </div>
   );
 }
