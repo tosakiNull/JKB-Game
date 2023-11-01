@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { dataBase } from './plugins/firebase';
-import { ref, onValue, set, push, child } from 'firebase/database'; // TODO: 這裡要包起來
+// import { ref, onValue, set, push, child } from 'firebase/database'; // TODO: 這裡要包起來
+import { ref, onValue, set } from 'firebase/database'; // TODO: 這裡要包起來
 import { v4 as uuidv4 } from 'uuid'; // TODO: 同樣包起來
 import Login from './pages/Login';
 // import GameHall from './pages/GameHall';
@@ -45,10 +46,10 @@ function App() {
     // TODO: 沒有gameID
     console.log('roomID', tableInfo[config.roomID]);
 
-    const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
+    // const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
 
-    // let gameID = `Game_${uuidv4()}`; // 建局
-    let gameID = newPostKey; // 建局
+    let gameID = `Game_${uuidv4()}`; // 建局
+    // let gameID = newPostKey; // 建局
     console.log('初始 new gameID: ', gameID);
 
     // 當前RoomID的場次內不滿2人
@@ -57,7 +58,7 @@ function App() {
       const lastGame = roomInfo[gameList[gameList.length - 1]];
 
       // TODO: 要取場次不滿2人的
-      const canAddGame = gameList.find((item) => roomInfo[gameList[item]].userList < 2);
+      const canAddGame = gameList.find((item) => roomInfo[item].userList.length < 2);
 
       console.log('lastGame: ', canAddGame)
 
@@ -85,32 +86,8 @@ function App() {
   }
 
   function handleNewGame() {
-    // TODO: 用firebase生新key
-    console.log('new_gameID');
-    const newKey = uuidv4();
-    set(ref(dataBase, `test/Room-1/${newKey}/userList/`), {});
-
-    setConfig({ ...config, gameID: newKey });
-
-    return newKey;
+    enterGame(config.userName);
   }
-
-  // function getNowOpenGameID() {
-  //   // TODO: 找當前 roomID 最後一筆, 看是否只有一個人的遊戲ID
-
-  // }
-
-  // async function getAllRoomData() {
-  //   await get(`test/Room-1`).then((snapshot) => {
-  //     if (snapshot.exists()) {
-  //       console.log(snapshot.val());
-  //     } else {
-  //       console.log("No data available");
-  //     }
-  //   }).catch((error) => {
-  //     console.error(error);
-  //   });
-  // }
 
   useEffect(() => {
     console.log('mounted')
@@ -121,10 +98,6 @@ function App() {
         console.log('snapshot', snapshot.val())
       }
     });
-
-    // getAllRoomData();
-
-    // handleNewGame();
   }, []);
 
   useEffect(() => {
