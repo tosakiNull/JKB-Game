@@ -17,20 +17,22 @@ function Login(props) {
 
   return (
     <div className="login">
+      <div className="login-content">
         <p className="title">猜拳遊戲</p>
-        <Form>
-          <Form.Field>
-            <label>名稱</label>
-            <Form.Input
-              type="text"
-              placeholder="請輸入名稱"
-              name="userName"
-              value={userName}
-              onChange={onUserNameChange}
-            />
-          </Form.Field>
-          <Button type='button' onClick={onSubmit}>登入</Button>
-        </Form>
+          <Form>
+            <Form.Field>
+              <label>名稱</label>
+              <Form.Input
+                type="text"
+                placeholder="請輸入名稱"
+                name="userName"
+                value={userName}
+                onChange={onUserNameChange}
+              />
+            </Form.Field>
+            <Button type='button' onClick={onSubmit}>登入</Button>
+          </Form>
+      </div>
     </div>
   );
 }

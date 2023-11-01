@@ -55,15 +55,20 @@ function App() {
     // 當前RoomID的場次內不滿2人
     if (roomInfo) {
       const gameList = Object.keys(roomInfo);
-      const lastGame = roomInfo[gameList[gameList.length - 1]];
 
       // TODO: 要取場次不滿2人的
-      const canAddGame = gameList.find((item) => roomInfo[item].userList.length < 2);
+      const canAddGame = gameList.find((item) => {
+        console.log('item: ', item, roomInfo[item])
+
+        if (Object.keys(roomInfo[item].userList).length < 2) {
+          return item;
+        }
+      });
 
       console.log('lastGame: ', canAddGame)
 
-      if (Object.keys(lastGame.userList).length < 2) {
-        gameID = gameList[gameList.length - 1];
+      if (canAddGame) {
+        gameID = canAddGame;
 
         console.log('old gameID', gameID)
       }

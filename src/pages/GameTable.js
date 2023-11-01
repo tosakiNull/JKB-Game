@@ -1,7 +1,7 @@
 // TODO: 遊戲主體
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Segment, Loader, Dimmer } from 'semantic-ui-react';
 
 function GameTable(props) {
   const { onPunch, rivalInfo, playerInfo, onNewGame } = props;
@@ -11,7 +11,6 @@ function GameTable(props) {
 
 
   function handlePunch(value) {
-    // TODO: 將拳寫入firebase
     onPunch(value);
   }
 
@@ -73,13 +72,13 @@ function GameTable(props) {
     if (playerInfo.type === rivalInfo.type) {
       return '平局';
     }
-    
+
     const win = isPlayerWin(playerInfo.type, rivalInfo.type);
     const winText = win ? playerInfo.userName : rivalInfo.userName;
     return `${winText} 獲勝`;
   }
 
-  // TODO: 同房間,新開一局
+  // 同房間,新開一局
   function handleNewGame() {
     // TODO: 這裡要去firebase開新局號,在新局號下計type
     // TODO: 簡易版就是刷新type,多一個欄位isPrepare,確認雙方都按下則新開一局 => 不用, 用局號認裡面是否有兩人
@@ -136,6 +135,11 @@ function GameTable(props) {
       )}
 
       <button onClick={handleNewGame}>再來一次</button>
+      <Segment>
+        <Dimmer active inverted>
+          <Loader inverted>Loading</Loader>
+        </Dimmer>
+    </Segment>
     </div>
   );
 }
