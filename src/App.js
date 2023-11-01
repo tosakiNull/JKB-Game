@@ -16,17 +16,21 @@ function App() {
   });
   const [tableInfo, setTableInfo] = useState({});
   const [rivalInfo, setRivalInfo] = useState({});
+  const [playerInfo, setPlayerInfo] = useState({});
 
   function writeUserData(userId, name, email) {
     // 這裡如果要新增,到時要用push
     // 不然會一直寫同一個欄位
     // const newPostKey = push().key;
-
-    set(ref(dataBase, 'test/Room-1/userList/' + name), {
+    const data = {
       userName: name,
       // userID: newPostKey,
       email: email,
-    });
+    }
+
+    set(ref(dataBase, 'test/Room-1/userList/' + name), data);
+
+    setPlayerInfo(data);
     // setConfig({ ...config, userID: newPostKey });
 
     // set(ref(dataBase, 'test/Room-1/userList'), []);
@@ -47,6 +51,10 @@ function App() {
 
   function handlePunch(value) {
     set(ref(dataBase, 'test/Room-1/userList/' + config.userName + '/type'), value);
+    setPlayerInfo({
+      ...playerInfo,
+      type: value
+    })
   }
 
   useEffect(() => {
@@ -56,21 +64,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log('tableInfo change', tableInfo)
-    // TODO: 這裡處理userList清單
-    if (tableInfo?.userList && tableInfo.userList.length >= 2) {
-      // 有同桌玩家
-      // TODO: 這裡沒進,要看一下
-      const rivalInfo = tableInfo.userList.find((infoItem) => infoItem.userName !== config.userName)
-      setRivalInfo(rivalInfo);
-      console.log('useEffect hasRival', rivalInfo);
+    if (tableInfo && tableInfo[config.roomID]?.userList && Object.keys(tableInfo[config.roomID].userList).length >= 0) {
+      // 有同桌玩家(假設這裡只進兩人)
+      const userList = tableInfo[config.roomID].userList;
+      const userKeyList = Object.keys(userList);
+      const nowRivalInfo = userKeyList.find((infoItem) => infoItem !== config.userName);
+
+      setRivalInfo(userList[nowRivalInfo]);
     }
   }, [tableInfo]);
 
   return (
     <div className="App">
       {config.userName ?
-        <GameTable tableInfo={tableInfo} config={config} rivalInfo={rivalInfo} onPunch={handlePunch} />
+        <GameTable 
+          tableInfo={tableInfo} 
+          config={config} 
+          rivalInfo={rivalInfo}
+          playerInfo={playerInfo}
+          onPunch={handlePunch} 
+        />
        : <Login createUser={createUser} />
       }
 
