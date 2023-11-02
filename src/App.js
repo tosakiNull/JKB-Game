@@ -5,7 +5,7 @@ import { ref, onValue, set } from 'firebase/database'; // TODO: 這裡要包起�
 import { v4 as uuidv4 } from 'uuid'; // TODO: 同樣包起來
 import Login from './pages/Login';
 // import GameHall from './pages/GameHall';
-import GameTable from './pages/GameTable';
+import GameLayer from './pages/GameLayer/GameLayer';
 import './App.css';
 
 function App() {
@@ -39,12 +39,12 @@ function App() {
   }
 
   function getGameID() {
-
-    const roomInfo = tableInfo[config.roomID] || {};
+    // TODO: 這裡tableInfo 為null時 取roomID會報錯
+    const roomInfo = (tableInfo && tableInfo[config.roomID]) || {};
     // let gameID = config.gameID;
 
     // TODO: 沒有gameID
-    console.log('roomID', tableInfo[config.roomID]);
+    console.log('roomID', tableInfo && tableInfo[config.roomID]);
 
     // const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
 
@@ -134,8 +134,20 @@ function App() {
 
   return (
     <div className="App">
+
+      {/* {config.userName ?
+        <Login createUser={enterGame} /> :
+        <GameLayer
+          tableInfo={tableInfo}
+          config={config}
+          rivalInfo={rivalInfo}
+          playerInfo={playerInfo}
+          onPunch={handlePunch}
+          onNewGame={handleNewGame}
+        />
+      } */}
       {config.userName ?
-        <GameTable
+        <GameLayer
           tableInfo={tableInfo}
           config={config}
           rivalInfo={rivalInfo}
