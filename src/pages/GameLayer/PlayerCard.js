@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Card, Icon } from 'semantic-ui-react';
 import { getPunchTypeIconName } from '../../utils/index'
 
-// 玩家顯示卡
 function PlayerCard(props) {
   const { name, type, isMe } = props;
 

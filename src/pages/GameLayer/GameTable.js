@@ -1,4 +1,3 @@
-// TODO: 遊戲主體
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid } from 'semantic-ui-react';

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { dataBase } from './plugins/firebase';
-// import { ref, onValue, set, push, child } from 'firebase/database'; // TODO: 這裡要包起來
-import { ref, onValue, set } from 'firebase/database'; // TODO: 這裡要包起來
-import { v4 as uuidv4 } from 'uuid'; // TODO: 同樣包起來
+import { ref, onValue, set } from 'firebase/database';
+import { v4 as uuidv4 } from 'uuid';
 import Login from './pages/Login';
-// import GameHall from './pages/GameHall';
 import GameLayer from './pages/GameLayer/GameLayer';
 import './App.css';
 
@@ -43,7 +41,6 @@ function App() {
     const roomInfo = (tableInfo && tableInfo[config.roomID]) || {};
     // let gameID = config.gameID;
 
-    // TODO: 沒有gameID
     console.log('roomID', tableInfo && tableInfo[config.roomID]);
 
     // const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
@@ -52,14 +49,14 @@ function App() {
     // let gameID = newPostKey; // 建局
     console.log('初始 new gameID: ', gameID);
 
-    // 當前RoomID的場次內不滿2人
+    // 當前RoomID的場次內不滿2人則加入房間
     if (roomInfo) {
       const gameList = Object.keys(roomInfo);
 
-      // TODO: 要取場次不滿2人的
       const canAddGame = gameList.find((item) => {
         console.log('item: ', item, roomInfo[item])
-
+        
+        // 取場次不滿2人
         if (Object.keys(roomInfo[item].userList).length < 2) {
           return item;
         }

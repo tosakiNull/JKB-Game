@@ -1,14 +1,15 @@
-// TODO: 遊戲主體
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Segment, Button } from 'semantic-ui-react';
 import Loading from '../../components/Loading';
 import GameTable from './GameTable';
 import GameButtonGroup from './GameButtonGroup';
+import usePrevious from '../../hooks/usePrevious';
 
 function GameLayer(props) {
   const { onPunch, rivalInfo, playerInfo, onNewGame } = props;
   const [isWaitRival, setIsWaitRival] = useState(true);
+  const preRivalInfo = usePrevious(rivalInfo);
   // const [loadingConfig, setLoadingConfig] = useState({ show: false, msg: '等待對方加入' })
 
   console.log(playerInfo, isWaitRival)
@@ -55,6 +56,15 @@ function GameLayer(props) {
     }
 
   }, [rivalInfo]);
+
+  useEffect(() => {
+    // 對手加入遊戲
+    if (!preRivalInfo.name && rivalInfo.name) {
+      // TODO: 發送對手加入遊戲的提示
+      console.log('對手加入遊戲')
+      // <Message color='teal'>Teal</Message>
+    }
+  }, [preRivalInfo])
 
   
   // TODO: 如果自己出拳 rival未出拳 => 等待對方出拳中
