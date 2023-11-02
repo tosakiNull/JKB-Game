@@ -55,7 +55,7 @@ function App() {
 
       const canAddGame = gameList.find((item) => {
         console.log('item: ', item, roomInfo[item])
-        
+
         // 取場次不滿2人
         if (Object.keys(roomInfo[item].userList).length < 2) {
           return item;
@@ -83,7 +83,6 @@ function App() {
   }
 
   function handleClear() {
-    // set(ref(dataBase, `test/Room-1/Game_${config.gameID}/userList/`), {});
     set(ref(dataBase, `test/Room-1/`), {});
   }
 
@@ -92,12 +91,9 @@ function App() {
   }
 
   useEffect(() => {
-    console.log('mounted')
-
-    return onValue(msgDB, (snapshot) => {
+    onValue(msgDB, (snapshot) => {
       if (snapshot.exists()) {
         setTableInfo(snapshot.val())
-        console.log('snapshot', snapshot.val())
       }
     });
   }, []);
@@ -110,7 +106,6 @@ function App() {
     const roomInfo = tableInfo[config.roomID];
     let gameID = config.gameID;
 
-    // const getNowGame = [`Game_${config.gameID}`]
     console.log('gameID: ', gameID)
     if (roomInfo && roomInfo[gameID]) {
       const getNowGame = roomInfo[gameID]
@@ -131,18 +126,6 @@ function App() {
 
   return (
     <div className="App">
-
-      {/* {config.userName ?
-        <Login createUser={enterGame} /> :
-        <GameLayer
-          tableInfo={tableInfo}
-          config={config}
-          rivalInfo={rivalInfo}
-          playerInfo={playerInfo}
-          onPunch={handlePunch}
-          onNewGame={handleNewGame}
-        />
-      } */}
       {config.userName ?
         <GameLayer
           tableInfo={tableInfo}

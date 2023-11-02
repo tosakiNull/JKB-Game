@@ -6,14 +6,15 @@ import { getPunchTypeIconName } from '../../utils/index'
 // 玩家操作按鈕
 function GameButtonGroup(props) {
   const { disabled, onPunch } = props;
+
   const buttonList = [
     { id: '2', iconName: getPunchTypeIconName('2'), animatedText: '剪刀' },
     { id: '0', iconName: getPunchTypeIconName('0'), animatedText: '石頭' },
     { id: '5', iconName: getPunchTypeIconName('5'), animatedText: '布' },
   ];
 
-  const buttonRows = buttonList.map((item) => (
-    <Button key={item.id} animated disabled={disabled} onClick={onPunch(item.id)}>
+  const btnRows =  buttonList.map((item) => (
+    <Button key={item.id} animated disabled={disabled} onClick={() => onPunch(item.id)}>
       <Button.Content visible>
         <Icon name={item.iconName} size="big" />
       </Button.Content>
@@ -25,7 +26,7 @@ function GameButtonGroup(props) {
 
   return (
     <div>
-      {buttonRows}
+      {btnRows}
     </div>
   );
 }
