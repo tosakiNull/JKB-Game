@@ -21,7 +21,6 @@ function App() {
 
   function enterGame(name) {
     const gameID = getGameID();
-    console.log('enter gameID', gameID);
 
     // 玩家
     const data = { userName: name };
@@ -37,37 +36,26 @@ function App() {
   }
 
   function getGameID() {
-    // TODO: 這裡tableInfo 為null時 取roomID會報錯
     const roomInfo = (tableInfo && tableInfo[config.roomID]) || {};
-    // let gameID = config.gameID;
-
-    console.log('roomID', tableInfo && tableInfo[config.roomID]);
 
     // const newPostKey = push(child(ref(dataBase), 'test/Room-1')).key;
+    // let gameID = newPostKey; // 建局
 
     let gameID = `Game_${uuidv4()}`; // 建局
-    // let gameID = newPostKey; // 建局
-    console.log('初始 new gameID: ', gameID);
 
     // 當前RoomID的場次內不滿2人則加入房間
     if (roomInfo) {
       const gameList = Object.keys(roomInfo);
 
       const canAddGame = gameList.find((item) => {
-        console.log('item: ', item, roomInfo[item])
-
-        // 取場次不滿2人
+        // 取場次內不滿2人
         if (Object.keys(roomInfo[item].userList).length < 2) {
           return item;
         }
       });
 
-      console.log('lastGame: ', canAddGame)
-
       if (canAddGame) {
         gameID = canAddGame;
-
-        console.log('old gameID', gameID)
       }
     }
 
@@ -82,9 +70,9 @@ function App() {
     })
   }
 
-  function handleClear() {
-    set(ref(dataBase, `test/Room-1/`), {});
-  }
+  // function handleClear() {
+  //   set(ref(dataBase, `test/Room-1/`), {});
+  // }
 
   function handleNewGame() {
     enterGame(config.userName);
@@ -104,9 +92,8 @@ function App() {
     }
 
     const roomInfo = tableInfo[config.roomID];
-    let gameID = config.gameID;
+    const gameID = config.gameID;
 
-    console.log('gameID: ', gameID)
     if (roomInfo && roomInfo[gameID]) {
       const getNowGame = roomInfo[gameID]
 
@@ -116,12 +103,9 @@ function App() {
         const userKeyList = Object.keys(userList);
         const nowRivalInfo = userKeyList.find((infoItem) => userList[infoItem].userName !== config.userName);
 
-        console.log('useEffect', userList[nowRivalInfo], nowRivalInfo)
-
         setRivalInfo(userList[nowRivalInfo]);
       }
     }
-    console.log(tableInfo)
   }, [tableInfo]);
 
   return (
@@ -137,7 +121,8 @@ function App() {
         />
        : <Login createUser={enterGame} />
       }
-      <button onClick={handleClear}>clear</button>
+      {/* 清空firebase按鈕-開發測試用後門 */}
+      {/* {playerInfo.userName === "T3-I'm%develop" && <button onClick={handleClear}>clear</button>} */}
     </div>
   );
 }

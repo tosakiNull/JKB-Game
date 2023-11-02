@@ -9,8 +9,6 @@ function GameLayer(props) {
   const { onPunch, rivalInfo, playerInfo, onNewGame } = props;
   const [isWaitRival, setIsWaitRival] = useState(true);
 
-  console.log(playerInfo, isWaitRival)
-
   function handlePunch(value) {
     onPunch(value);
   }
